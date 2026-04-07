@@ -4,190 +4,327 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trigger — Intention Engine for Mac</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            background: #1a1410;
+            color: #c4a882;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Subtle grain texture */
+        /* Warm grain overlay */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 999;
         }
 
+        /* Subtle dawn gradient glow */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 80%;
+            background: radial-gradient(ellipse, rgba(210, 120, 60, 0.06) 0%, rgba(180, 80, 100, 0.03) 40%, transparent 70%);
+            pointer-events: none;
+        }
+
         .container {
-            max-width: 640px;
+            max-width: 600px;
             width: 100%;
             padding: 0 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Header */
         header {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 32px 0 0;
+            padding: 36px 0 0;
         }
 
         .wordmark {
-            font-size: 15px;
-            font-weight: 600;
-            color: #888;
-            letter-spacing: 0.5px;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            font-size: 16px;
+            color: #8a7560;
+            letter-spacing: 2px;
         }
 
         header a {
-            font-size: 13px;
-            color: #555;
+            font-size: 12px;
+            color: #5a4d3e;
             text-decoration: none;
-            transition: color 0.2s;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
         }
 
-        header a:hover { color: #aaa; }
+        header a:hover { color: #c4a882; }
 
         /* Hero */
         .hero {
             text-align: center;
-            padding: 100px 0 60px;
+            padding: 90px 0 50px;
         }
 
         .icon {
-            width: 96px;
-            height: 96px;
-            margin: 0 auto 40px;
-            background: linear-gradient(135deg, #1a1a2e 0%, #0d0d1a 100%);
-            border-radius: 22px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 44px;
+            background: linear-gradient(135deg, #2a1f18 0%, #1a1410 100%);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 60px rgba(0, 200, 255, 0.08), 0 0 0 1px rgba(255,255,255,0.06);
-            animation: float 6s ease-in-out infinite;
+            box-shadow: 0 0 80px rgba(210, 120, 60, 0.08), 0 0 0 1px rgba(196, 168, 130, 0.08);
+            animation: glow 8s ease-in-out infinite;
         }
 
-        .icon svg {
-            width: 40px;
-            height: 40px;
-        }
+        .icon svg { width: 32px; height: 32px; }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 60px rgba(210, 120, 60, 0.06), 0 0 0 1px rgba(196, 168, 130, 0.08); }
+            50% { box-shadow: 0 0 80px rgba(210, 120, 60, 0.12), 0 0 0 1px rgba(196, 168, 130, 0.12); }
         }
 
         h1 {
-            font-size: clamp(28px, 5vw, 42px);
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.15;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            font-size: clamp(26px, 5vw, 38px);
+            font-weight: 400;
+            color: #e8d5be;
+            line-height: 1.25;
+            margin-bottom: 24px;
         }
 
         h1 span {
-            background: linear-gradient(135deg, #00c8ff, #7b68ee);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #d2783c;
         }
 
         .subtitle {
-            font-size: 17px;
-            line-height: 1.6;
-            color: #777;
-            max-width: 420px;
-            margin: 0 auto 40px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #7a6b5a;
+            max-width: 400px;
+            margin: 0 auto 44px;
         }
 
         .download-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 14px 32px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 15px;
+            gap: 10px;
+            padding: 14px 30px;
+            background: rgba(210, 120, 60, 0.08);
+            border: 1px solid rgba(210, 120, 60, 0.15);
+            border-radius: 10px;
+            color: #d2783c;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
             font-weight: 500;
             text-decoration: none;
-            transition: all 0.25s;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
         }
 
         .download-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.18);
+            background: rgba(210, 120, 60, 0.14);
+            border-color: rgba(210, 120, 60, 0.25);
             transform: translateY(-1px);
         }
 
-        .download-btn svg {
-            width: 16px;
-            height: 16px;
-            opacity: 0.6;
-        }
+        .download-btn svg { width: 15px; height: 15px; opacity: 0.7; }
 
         .meta {
-            margin-top: 12px;
-            font-size: 12px;
-            color: #444;
+            margin-top: 14px;
+            font-size: 11px;
+            color: #4a3f34;
+            letter-spacing: 0.5px;
         }
 
-        /* Screenshot */
-        .screenshot {
+        /* Mockup — CSS-only notch panel recreation */
+        .mockup {
             width: 100%;
-            max-width: 560px;
-            margin: 20px auto 60px;
-            border-radius: 16px;
+            max-width: 380px;
+            margin: 30px auto 60px;
+            position: relative;
+        }
+
+        .mock-screen {
+            background: #12100d;
+            border-radius: 14px;
+            border: 1px solid rgba(196, 168, 130, 0.06);
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
         }
 
-        .screenshot img {
-            width: 100%;
-            display: block;
-        }
-
-        .screenshot-placeholder {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+        /* Notch */
+        .mock-menubar {
+            height: 28px;
+            background: #0a0908;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #333;
-            font-size: 14px;
+            position: relative;
         }
 
-        /* How it works */
+        .mock-notch {
+            width: 130px;
+            height: 22px;
+            background: #000;
+            border-radius: 0 0 12px 12px;
+            position: relative;
+        }
+
+        .mock-notch-dot {
+            width: 6px;
+            height: 6px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Expanded panel below notch */
+        .mock-panel {
+            width: 260px;
+            margin: 0 auto;
+            background: rgba(30, 26, 22, 0.95);
+            border: 1px solid rgba(196, 168, 130, 0.08);
+            border-top: none;
+            border-radius: 0 0 14px 14px;
+            padding: 12px 14px 14px;
+            backdrop-filter: blur(20px);
+        }
+
+        .mock-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: rgba(196, 168, 130, 0.06);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .mock-bolt {
+            color: #d2783c;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .mock-input-text {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            color: #8a7560;
+        }
+
+        .mock-input .cursor {
+            display: inline-block;
+            width: 1px;
+            height: 13px;
+            background: #d2783c;
+            animation: blink 1.2s step-end infinite;
+            margin-left: 1px;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .mock-triggers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .mock-trigger {
+            padding: 7px 4px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 9px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .mock-trigger.t-time { background: rgba(210, 120, 60, 0.1); color: #d2783c; }
+        .mock-trigger.t-app { background: rgba(0, 200, 200, 0.08); color: #4db8b8; }
+        .mock-trigger.t-loc { background: rgba(80, 180, 80, 0.08); color: #5ab85a; }
+        .mock-trigger.t-back { background: rgba(140, 90, 200, 0.08); color: #9b6ecc; }
+        .mock-trigger.t-lock { background: rgba(100, 100, 200, 0.08); color: #7878cc; }
+        .mock-trigger.t-queue { background: rgba(120, 120, 120, 0.06); color: #666; }
+
+        /* Items below panel */
+        .mock-items {
+            margin-top: 8px;
+            border-top: 1px solid rgba(196, 168, 130, 0.06);
+            padding-top: 8px;
+        }
+
+        .mock-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 0;
+            font-size: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .mock-item-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+        .mock-item-text { color: #8a7560; flex: 1; }
+        .mock-item-tag {
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Desktop wallpaper hint below panel */
+        .mock-desktop {
+            height: 100px;
+            background: linear-gradient(180deg, #12100d 0%, #1a1612 100%);
+        }
+
+        /* Sections */
+        .section-line {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(196, 168, 130, 0.1), transparent);
+        }
+
         .how {
             width: 100%;
-            padding: 40px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 48px 0;
         }
 
-        .how h2 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #555;
+        .how h2, .triggers h2 {
+            font-family: 'Special Elite', 'Courier New', monospace;
+            font-size: 14px;
+            color: #5a4d3e;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
             margin-bottom: 32px;
             text-align: center;
         }
@@ -195,133 +332,122 @@
         .steps {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
 
         .step {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             align-items: flex-start;
         }
 
         .step-num {
             flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            background: rgba(210, 120, 60, 0.06);
+            border: 1px solid rgba(210, 120, 60, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #555;
+            font-size: 11px;
+            font-weight: 600;
+            color: #d2783c;
         }
 
         .step-text h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #ccc;
-            margin-bottom: 4px;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            font-size: 14px;
+            color: #c4a882;
+            margin-bottom: 3px;
         }
 
         .step-text p {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.5;
+            font-size: 12px;
+            color: #5a4d3e;
+            line-height: 1.6;
         }
 
-        /* Triggers grid */
         .triggers {
             width: 100%;
             padding: 48px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .triggers h2 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 24px;
-            text-align: center;
         }
 
         .trigger-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
 
         .trigger-chip {
-            padding: 10px 12px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
+            padding: 10px 8px;
+            border-radius: 8px;
+            background: rgba(196, 168, 130, 0.03);
+            border: 1px solid rgba(196, 168, 130, 0.05);
             text-align: center;
-            font-size: 12px;
-            color: #666;
-            transition: all 0.2s;
+            font-size: 10px;
+            color: #6a5c4c;
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
         }
 
         .trigger-chip:hover {
-            background: rgba(255,255,255,0.06);
-            color: #aaa;
+            background: rgba(210, 120, 60, 0.06);
+            border-color: rgba(210, 120, 60, 0.1);
+            color: #c4a882;
         }
 
         .trigger-chip .emoji {
             display: block;
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 4px;
         }
 
-        /* Science */
         .science {
             width: 100%;
-            padding: 40px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 44px 0;
             text-align: center;
         }
 
         .science p {
-            font-size: 13px;
-            color: #444;
-            line-height: 1.7;
-            max-width: 480px;
+            font-size: 12px;
+            color: #4a3f34;
+            line-height: 1.8;
+            max-width: 440px;
             margin: 0 auto;
         }
 
         .science em {
-            color: #666;
-            font-style: normal;
+            color: #7a6b5a;
+            font-style: italic;
         }
 
-        /* Footer */
         footer {
             width: 100%;
-            padding: 40px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 36px 0;
             text-align: center;
         }
 
         footer p {
-            font-size: 12px;
-            color: #333;
+            font-size: 11px;
+            color: #3a3228;
+            letter-spacing: 0.5px;
         }
 
         footer a {
-            color: #444;
+            color: #5a4d3e;
             text-decoration: none;
+            transition: color 0.3s;
         }
 
-        footer a:hover { color: #888; }
+        footer a:hover { color: #c4a882; }
 
-        /* Mobile */
         @media (max-width: 540px) {
             .hero { padding: 60px 0 40px; }
-            .icon { width: 72px; height: 72px; border-radius: 18px; }
+            .icon { width: 64px; height: 64px; border-radius: 16px; }
+            .mockup { max-width: 300px; }
+            .mock-panel { width: 220px; }
             .trigger-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
@@ -330,12 +456,12 @@
     <div class="container">
         <header>
             <div class="wordmark">trigger</div>
-            <a href="https://github.com/rijo-george/trigger">GitHub</a>
+            <a href="https://github.com/rijo-george/trigger">github</a>
         </header>
 
         <section class="hero">
             <div class="icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#00c8ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#d2783c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                 </svg>
             </div>
@@ -343,22 +469,65 @@
             <h1>Your brain is a terrible <span>reminder app</span></h1>
 
             <p class="subtitle">
-                Trigger is an intention engine that lives in your MacBook notch.
-                Tell it what you need to do and when. It fires at the right moment.
-                You forget nothing.
+                An intention engine in your MacBook notch.
+                Type what. Pick when. Forget it.
+                It fires at the right moment.
             </p>
 
             <a href="https://github.com/rijo-george/trigger/releases/latest" class="download-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                 Download for Mac
             </a>
-            <p class="meta">macOS 14+ &middot; Universal &middot; Free &middot; No account needed</p>
+            <p class="meta">macOS 14+ &middot; universal &middot; free &middot; no account</p>
         </section>
 
-        <section class="screenshot">
-            <!-- Replace with actual screenshot -->
-            <div class="screenshot-placeholder">screenshot here</div>
+        <!-- CSS-only mockup of the app -->
+        <section class="mockup">
+            <div class="mock-screen">
+                <div class="mock-menubar">
+                    <div class="mock-notch">
+                        <div class="mock-notch-dot"></div>
+                    </div>
+                </div>
+                <div class="mock-panel">
+                    <div class="mock-input">
+                        <span class="mock-bolt">&#9889;</span>
+                        <span class="mock-input-text">Reply to Sarah<span class="cursor"></span></span>
+                    </div>
+                    <div class="mock-triggers">
+                        <div class="mock-trigger t-time">In...</div>
+                        <div class="mock-trigger t-time">At time</div>
+                        <div class="mock-trigger t-time">Daily</div>
+                        <div class="mock-trigger t-app">Open app</div>
+                        <div class="mock-trigger t-app">Close app</div>
+                        <div class="mock-trigger t-lock">Leaving</div>
+                        <div class="mock-trigger t-loc">Location</div>
+                        <div class="mock-trigger t-back">I'm back</div>
+                        <div class="mock-trigger t-queue">Queue</div>
+                    </div>
+                    <div class="mock-items">
+                        <div class="mock-item">
+                            <div class="mock-item-dot" style="background:#d2783c"></div>
+                            <span class="mock-item-text">Review the PR</span>
+                            <span class="mock-item-tag" style="background:rgba(0,200,200,0.08);color:#4db8b8">Xcode</span>
+                        </div>
+                        <div class="mock-item">
+                            <div class="mock-item-dot" style="background:#5ab85a"></div>
+                            <span class="mock-item-text">Submit expense report</span>
+                            <span class="mock-item-tag" style="background:rgba(80,180,80,0.06);color:#5ab85a">office</span>
+                        </div>
+                        <div class="mock-item">
+                            <div class="mock-item-dot" style="background:#9b6ecc"></div>
+                            <span class="mock-item-text">Finish auth refactor</span>
+                            <span class="mock-item-tag" style="background:rgba(140,90,200,0.06);color:#9b6ecc">back</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mock-desktop"></div>
+            </div>
         </section>
+
+        <div class="section-line"></div>
 
         <section class="how">
             <h2>How it works</h2>
@@ -367,59 +536,69 @@
                     <div class="step-num">1</div>
                     <div class="step-text">
                         <h3>Hover the notch</h3>
-                        <p>The panel drops down from your MacBook notch. Type what you need to do.</p>
+                        <p>Panel drops down. Type what you need to do. Hit enter.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num">2</div>
                     <div class="step-text">
                         <h3>Pick a trigger</h3>
-                        <p>Choose when: a time, an app, a location, when you're back, before you leave. One tap.</p>
+                        <p>Time, app, location, battery, docked, or just "when I'm back." One tap.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num">3</div>
                     <div class="step-text">
                         <h3>Forget about it</h3>
-                        <p>The notch fires your intention at the right moment. Done or snooze. That's it.</p>
+                        <p>The notch fires at the right moment. Done or snooze.</p>
                     </div>
                 </div>
             </div>
         </section>
 
+        <div class="section-line"></div>
+
         <section class="triggers">
-            <h2>12 trigger types</h2>
+            <h2>12 triggers</h2>
             <div class="trigger-grid">
-                <div class="trigger-chip"><span class="emoji">&#9201;</span>In 5m / 30m / 1h</div>
-                <div class="trigger-chip"><span class="emoji">&#128347;</span>At exact time</div>
-                <div class="trigger-chip"><span class="emoji">&#128257;</span>Daily recurring</div>
-                <div class="trigger-chip"><span class="emoji">&#128241;</span>Open an app</div>
-                <div class="trigger-chip"><span class="emoji">&#10060;</span>Close an app</div>
-                <div class="trigger-chip"><span class="emoji">&#128274;</span>Before you leave</div>
-                <div class="trigger-chip"><span class="emoji">&#128205;</span>Arrive at location</div>
-                <div class="trigger-chip"><span class="emoji">&#128694;</span>Leave a location</div>
-                <div class="trigger-chip"><span class="emoji">&#128267;</span>Plugged in</div>
-                <div class="trigger-chip"><span class="emoji">&#128267;</span>Battery low</div>
-                <div class="trigger-chip"><span class="emoji">&#128421;</span>Docked</div>
-                <div class="trigger-chip"><span class="emoji">&#11015;</span>New download</div>
+                <div class="trigger-chip"><span class="emoji">&#9201;</span>in 5m / 1h</div>
+                <div class="trigger-chip"><span class="emoji">&#128347;</span>at time</div>
+                <div class="trigger-chip"><span class="emoji">&#128257;</span>daily</div>
+                <div class="trigger-chip"><span class="emoji">&#128241;</span>open app</div>
+                <div class="trigger-chip"><span class="emoji">&#10060;</span>close app</div>
+                <div class="trigger-chip"><span class="emoji">&#128274;</span>leaving</div>
+                <div class="trigger-chip"><span class="emoji">&#128205;</span>arrive</div>
+                <div class="trigger-chip"><span class="emoji">&#128694;</span>leave</div>
+                <div class="trigger-chip"><span class="emoji">&#9889;</span>plugged in</div>
+                <div class="trigger-chip"><span class="emoji">&#128267;</span>low battery</div>
+                <div class="trigger-chip"><span class="emoji">&#128421;</span>docked</div>
+                <div class="trigger-chip"><span class="emoji">&#11015;</span>download</div>
             </div>
         </section>
 
+        <div class="section-line"></div>
+
         <section class="science">
             <p>
-                Built on <em>implementation intentions</em> &mdash; a technique from cognitive psychology
-                that increases follow-through by 2&ndash;4&times;.
-                When you attach a "when" to every "what," your brain stops carrying open loops.
+                Built on <em>implementation intentions</em> &mdash;
+                a cognitive psychology technique that increases
+                follow-through by 2&ndash;4&times;.
+                Attach a "when" to every "what"
+                and your brain lets go.
                 <br><br>
-                No accounts. No cloud. No tracking. Your data stays on your Mac.
+                No accounts. No cloud. No tracking.
+                <br>
+                Your data stays on your Mac.
             </p>
         </section>
 
+        <div class="section-line"></div>
+
         <footer>
             <p>
-                Made by <a href="https://github.com/rijo-george">Rijo George</a>
-                &middot; <a href="https://github.com/rijo-george/trigger">Source</a>
-                &middot; &copy; 2026
+                made by <a href="https://github.com/rijo-george">rijo</a>
+                &middot; <a href="https://github.com/rijo-george/trigger">source</a>
+                &middot; 2026
             </p>
         </footer>
     </div>
