@@ -11,8 +11,8 @@
 
         body {
             font-family: 'IBM Plex Mono', 'Courier New', monospace;
-            background: #1a1410;
-            color: #c4a882;
+            background: #f4efe6;
+            color: #4a3f34;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -25,7 +25,7 @@
             content: '';
             position: fixed;
             inset: 0;
-            opacity: 0.04;
+            opacity: 0.035;
             mix-blend-mode: multiply;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             pointer-events: none;
@@ -41,7 +41,7 @@
             transform: translateX(-50%);
             width: 120%;
             height: 80%;
-            background: radial-gradient(ellipse, rgba(210, 120, 60, 0.06) 0%, rgba(180, 80, 100, 0.03) 40%, transparent 70%);
+            background: radial-gradient(ellipse, rgba(210, 120, 60, 0.05) 0%, rgba(180, 80, 100, 0.02) 40%, transparent 70%);
             pointer-events: none;
         }
 
@@ -67,19 +67,19 @@
         .wordmark {
             font-family: 'Special Elite', 'Courier New', monospace;
             font-size: 16px;
-            color: #8a7560;
+            color: #8a7a68;
             letter-spacing: 2px;
         }
 
         header a {
             font-size: 12px;
-            color: #5a4d3e;
+            color: #a0937f;
             text-decoration: none;
             letter-spacing: 0.5px;
             transition: color 0.3s;
         }
 
-        header a:hover { color: #c4a882; }
+        header a:hover { color: #4a3f34; }
 
         /* Hero */
         .hero {
@@ -96,22 +96,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 80px rgba(210, 120, 60, 0.08), 0 0 0 1px rgba(196, 168, 130, 0.08);
+            box-shadow: 0 8px 40px rgba(40, 30, 20, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
             animation: glow 8s ease-in-out infinite;
         }
 
         .icon svg { width: 32px; height: 32px; }
 
         @keyframes glow {
-            0%, 100% { box-shadow: 0 0 60px rgba(210, 120, 60, 0.06), 0 0 0 1px rgba(196, 168, 130, 0.08); }
-            50% { box-shadow: 0 0 80px rgba(210, 120, 60, 0.12), 0 0 0 1px rgba(196, 168, 130, 0.12); }
+            0%, 100% { box-shadow: 0 8px 40px rgba(40, 30, 20, 0.12), 0 0 0 1px rgba(0,0,0,0.05); }
+            50% { box-shadow: 0 8px 50px rgba(40, 30, 20, 0.2), 0 0 0 1px rgba(0,0,0,0.08); }
         }
 
         h1 {
             font-family: 'Special Elite', 'Courier New', monospace;
             font-size: clamp(26px, 5vw, 38px);
             font-weight: 400;
-            color: #e8d5be;
+            color: #1a1a1a;
             line-height: 1.25;
             margin-bottom: 24px;
         }
@@ -123,7 +123,7 @@
         .subtitle {
             font-size: 14px;
             line-height: 1.8;
-            color: #7a6b5a;
+            color: #888;
             max-width: 400px;
             margin: 0 auto 44px;
         }
@@ -156,7 +156,7 @@
         .meta {
             margin-top: 14px;
             font-size: 11px;
-            color: #4a3f34;
+            color: #aaa;
             letter-spacing: 0.5px;
         }
 
@@ -171,9 +171,9 @@
         .mock-screen {
             background: #12100d;
             border-radius: 14px;
-            border: 1px solid rgba(196, 168, 130, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.18);
         }
 
         /* Notch */
@@ -311,7 +311,7 @@
         .section-line {
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(196, 168, 130, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent);
         }
 
         .how {
@@ -322,7 +322,7 @@
         .how h2, .triggers h2 {
             font-family: 'Special Elite', 'Courier New', monospace;
             font-size: 14px;
-            color: #5a4d3e;
+            color: #999;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 32px;
@@ -346,26 +346,26 @@
             width: 26px;
             height: 26px;
             border-radius: 7px;
-            background: rgba(210, 120, 60, 0.06);
-            border: 1px solid rgba(210, 120, 60, 0.1);
+            background: rgba(210, 120, 60, 0.08);
+            border: 1px solid rgba(210, 120, 60, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
-            color: #d2783c;
+            color: #c06830;
         }
 
         .step-text h3 {
             font-family: 'Special Elite', 'Courier New', monospace;
             font-size: 14px;
-            color: #c4a882;
+            color: #3a2e24;
             margin-bottom: 3px;
         }
 
         .step-text p {
             font-size: 12px;
-            color: #5a4d3e;
+            color: #999;
             line-height: 1.6;
         }
 
@@ -383,19 +383,19 @@
         .trigger-chip {
             padding: 10px 8px;
             border-radius: 8px;
-            background: rgba(196, 168, 130, 0.03);
-            border: 1px solid rgba(196, 168, 130, 0.05);
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.04);
             text-align: center;
             font-size: 10px;
-            color: #6a5c4c;
+            color: #888;
             transition: all 0.25s;
             letter-spacing: 0.3px;
         }
 
         .trigger-chip:hover {
             background: rgba(210, 120, 60, 0.06);
-            border-color: rgba(210, 120, 60, 0.1);
-            color: #c4a882;
+            border-color: rgba(210, 120, 60, 0.12);
+            color: #4a3f34;
         }
 
         .trigger-chip .emoji {
@@ -412,14 +412,14 @@
 
         .science p {
             font-size: 12px;
-            color: #4a3f34;
+            color: #999;
             line-height: 1.8;
             max-width: 440px;
             margin: 0 auto;
         }
 
         .science em {
-            color: #7a6b5a;
+            color: #666;
             font-style: italic;
         }
 
@@ -431,17 +431,17 @@
 
         footer p {
             font-size: 11px;
-            color: #3a3228;
+            color: #bbb;
             letter-spacing: 0.5px;
         }
 
         footer a {
-            color: #5a4d3e;
+            color: #999;
             text-decoration: none;
             transition: color 0.3s;
         }
 
-        footer a:hover { color: #c4a882; }
+        footer a:hover { color: #4a3f34; }
 
         @media (max-width: 540px) {
             .hero { padding: 60px 0 40px; }
