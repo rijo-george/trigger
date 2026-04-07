@@ -1,0 +1,6 @@
+.build/
+.swiftpm/
+_dmg_*
+*.dmg
+*.app/
+DerivedData/
