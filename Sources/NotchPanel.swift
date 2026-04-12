@@ -19,15 +19,16 @@ class FirstMouseHostingView<Content: View>: NSHostingView<Content> {
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 }
 
-// MARK: - Notch Panel Controller
+// MARK: - Menu Panel Controller
 
 class NotchPanelController: ObservableObject {
     private var panel: KeyablePanel?
-    private var mouseTracker: Any?
-    private var trackingTimer: Timer?
+    private var clickMonitor: Any?
 
     @Published var isExpanded = false
     @Published var firedIntention: Intention?
+
+    weak var statusItem: NSStatusItem?
 
     let store: IntentionStore
     let monitor: TriggerMonitor
@@ -48,26 +49,20 @@ class NotchPanelController: ObservableObject {
     func setup() {
         createPanel()
         monitor.start()
-        startMouseTracking()
     }
 
     // MARK: - Panel Creation
 
     private func createPanel() {
-        guard let screen = NSScreen.main else { return }
-
-        let notchWidth: CGFloat = 220
-        let collapsedHeight: CGFloat = 12
-
-        let x = screen.frame.midX - notchWidth / 2
-        let y = screen.frame.maxY - screen.safeAreaInsets.top
+        let expandedWidth: CGFloat = 340
+        let expandedHeight: CGFloat = 400
 
         let content = NotchContentView(controller: self)
         let hostingView = FirstMouseHostingView(rootView: content)
         hostingView.layer?.backgroundColor = .clear
 
         let p = KeyablePanel(
-            contentRect: NSRect(x: x, y: y - collapsedHeight, width: notchWidth, height: collapsedHeight),
+            contentRect: NSRect(x: 0, y: 0, width: expandedWidth, height: expandedHeight),
             styleMask: [.titled, .fullSizeContentView, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -75,7 +70,7 @@ class NotchPanelController: ObservableObject {
 
         p.isOpaque = false
         p.backgroundColor = .clear
-        p.hasShadow = false
+        p.hasShadow = true
         p.level = .statusBar
         p.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
         p.hidesOnDeactivate = false
@@ -88,50 +83,76 @@ class NotchPanelController: ObservableObject {
         p.standardWindowButton(.miniaturizeButton)?.isHidden = true
         p.standardWindowButton(.zoomButton)?.isHidden = true
 
-        p.orderFront(nil)
         panel = p
+    }
+
+    // MARK: - Positioning below status item
+
+    private func panelFrame(width: CGFloat, height: CGFloat) -> NSRect {
+        if let button = statusItem?.button,
+           let window = button.window {
+            let buttonRect = button.convert(button.bounds, to: nil)
+            let screenRect = window.convertToScreen(buttonRect)
+            let x = screenRect.midX - width / 2
+            let y = screenRect.minY - height - 4
+            return NSRect(x: x, y: y, width: width, height: height)
+        }
+        // Fallback: top-center of screen
+        if let screen = NSScreen.main {
+            return NSRect(
+                x: screen.frame.midX - width / 2,
+                y: screen.frame.maxY - 30 - height,
+                width: width,
+                height: height
+            )
+        }
+        return NSRect(x: 0, y: 0, width: width, height: height)
+    }
+
+    private func statusItemScreenFrame() -> NSRect? {
+        guard let button = statusItem?.button, let window = button.window else { return nil }
+        let buttonRect = button.convert(button.bounds, to: nil)
+        return window.convertToScreen(buttonRect)
     }
 
     // MARK: - Expand / Collapse
 
     func expand() {
-        guard !isExpanded, let screen = NSScreen.main else { return }
+        guard !isExpanded else { return }
         isExpanded = true
-        panel?.makeKey()
 
         let expandedWidth: CGFloat = 340
         let expandedHeight: CGFloat = firedIntention != nil ? 160 : 400
-        let x = screen.frame.midX - expandedWidth / 2
-        let y = screen.frame.maxY - screen.safeAreaInsets.top
+        let frame = panelFrame(width: expandedWidth, height: expandedHeight)
+
+        panel?.setFrame(frame, display: false)
+        panel?.alphaValue = 0
+        panel?.orderFront(nil)
+        panel?.makeKey()
 
         NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.35
-            ctx.timingFunction = CAMediaTimingFunction(controlPoints: 0.22, 1, 0.36, 1) // ease-out cubic
-            panel?.animator().setFrame(
-                NSRect(x: x, y: y - expandedHeight, width: expandedWidth, height: expandedHeight),
-                display: true
-            )
+            ctx.duration = 0.2
+            ctx.timingFunction = CAMediaTimingFunction(controlPoints: 0.22, 1, 0.36, 1)
+            panel?.animator().alphaValue = 1
         }
+
+        startClickOutsideMonitor()
     }
 
     func collapse() {
-        guard isExpanded, let screen = NSScreen.main else { return }
+        guard isExpanded else { return }
         isExpanded = false
         firedIntention = nil
 
-        let notchWidth: CGFloat = 220
-        let collapsedHeight: CGFloat = 12
-        let x = screen.frame.midX - notchWidth / 2
-        let y = screen.frame.maxY - screen.safeAreaInsets.top
+        stopClickOutsideMonitor()
 
-        NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.25
+        NSAnimationContext.runAnimationGroup({ ctx in
+            ctx.duration = 0.15
             ctx.timingFunction = CAMediaTimingFunction(name: .easeIn)
-            panel?.animator().setFrame(
-                NSRect(x: x, y: y - collapsedHeight, width: notchWidth, height: collapsedHeight),
-                display: true
-            )
-        }
+            panel?.animator().alphaValue = 0
+        }, completionHandler: { [weak self] in
+            self?.panel?.orderOut(nil)
+        })
     }
 
     func toggle() {
@@ -142,7 +163,17 @@ class NotchPanelController: ObservableObject {
 
     private func showFired(_ intention: Intention) {
         firedIntention = intention
-        expand()
+        if isExpanded {
+            // Resize in place for fired content
+            let frame = panelFrame(width: 340, height: 160)
+            NSAnimationContext.runAnimationGroup { ctx in
+                ctx.duration = 0.2
+                ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                panel?.animator().setFrame(frame, display: true)
+            }
+        } else {
+            expand()
+        }
 
         // Auto-collapse after 10 seconds if no interaction
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
@@ -152,39 +183,28 @@ class NotchPanelController: ObservableObject {
         }
     }
 
-    // MARK: - Mouse tracking for proximity detection
+    // MARK: - Click outside to dismiss
 
-    private func startMouseTracking() {
-        trackingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.checkMouseProximity()
+    private func startClickOutsideMonitor() {
+        clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+            guard let self = self, self.isExpanded else { return }
+            let mouseLocation = NSEvent.mouseLocation
+
+            // Ignore clicks on the status item (toggle handles those)
+            if let buttonFrame = self.statusItemScreenFrame(), buttonFrame.contains(mouseLocation) {
+                return
+            }
+
+            if let panelFrame = self.panel?.frame, !panelFrame.contains(mouseLocation) {
+                self.collapse()
+            }
         }
     }
 
-    private func checkMouseProximity() {
-        guard let screen = NSScreen.main else { return }
-        let mouseLocation = NSEvent.mouseLocation
-
-        let notchCenterX = screen.frame.midX
-        let notchTop = screen.frame.maxY
-
-        // Detection zone: 160px wide, 24px tall at top center of screen
-        let proximityWidth: CGFloat = 160
-        let proximityHeight: CGFloat = 24
-
-        let inZone = abs(mouseLocation.x - notchCenterX) < proximityWidth / 2
-            && mouseLocation.y > notchTop - proximityHeight
-
-        if inZone && !isExpanded {
-            expand()
-        }
-
-        // Collapse if mouse is far from the expanded panel
-        if isExpanded && firedIntention == nil {
-            let panelFrame = panel?.frame ?? .zero
-            let expandedZone = panelFrame.insetBy(dx: -40, dy: -40)
-            if !expandedZone.contains(mouseLocation) {
-                collapse()
-            }
+    private func stopClickOutsideMonitor() {
+        if let monitor = clickMonitor {
+            NSEvent.removeMonitor(monitor)
+            clickMonitor = nil
         }
     }
 }

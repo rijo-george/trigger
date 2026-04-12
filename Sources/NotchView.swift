@@ -1,55 +1,25 @@
 import SwiftUI
 import AppKit
 
-// MARK: - Main notch content
+// MARK: - Main panel content
 
 struct NotchContentView: View {
     @ObservedObject var controller: NotchPanelController
 
     var body: some View {
-        ZStack {
-            if controller.isExpanded {
-                ExpandedView(controller: controller)
-                    .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .top)))
-            } else {
-                CollapsedView(count: controller.store.pendingCount)
-            }
-        }
-        .animation(.spring(response: 0.35, dampingFraction: 0.82), value: controller.isExpanded)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(
-            ZStack {
-                VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow)
-                Color.black.opacity(0.6)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: controller.isExpanded ? 18 : 8))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: controller.isExpanded ? 18 : 8)
-                .strokeBorder(.white.opacity(0.12), lineWidth: 0.5)
-        )
-    }
-}
-
-// MARK: - Collapsed pill
-
-struct CollapsedView: View {
-    let count: Int
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Circle()
-                .fill(count > 0 ? Color.cyan : Color.gray.opacity(0.4))
-                .frame(width: 5, height: 5)
-                .shadow(color: count > 0 ? .cyan.opacity(0.6) : .clear, radius: 4)
-
-            if count > 0 {
-                Text("\(count)")
-                    .font(.system(size: 9, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.5))
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        ExpandedView(controller: controller)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                ZStack {
+                    VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow)
+                    Color.black.opacity(0.6)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 18))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .strokeBorder(.white.opacity(0.12), lineWidth: 0.5)
+            )
     }
 }
 
@@ -60,11 +30,6 @@ struct ExpandedView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Notch bridge
-            Rectangle()
-                .fill(.black)
-                .frame(height: 8)
-
             if let fired = controller.firedIntention {
                 FiredView(intention: fired, controller: controller)
             } else {
